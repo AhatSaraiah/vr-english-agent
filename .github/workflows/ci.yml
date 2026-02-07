@@ -39,7 +39,7 @@ jobs:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         GEMINI_MODEL: "gemini-2.5-flash"
         ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
-        ELEVENLABS_VOICE_ID: "21m00Tcm4TlvDq8ikWAM"
+        ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
         TEACHER_EMAIL_PREMIUM: ${{ secrets.TEACHER_EMAIL_PREMIUM }}
         TEACHER_PASSWORD_PREMIUM: ${{ secrets.TEACHER_PASSWORD_PREMIUM }}
         TEACHER_EMAIL_BASIC: ${{ secrets.TEACHER_EMAIL_BASIC }}

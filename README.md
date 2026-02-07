@@ -67,6 +67,7 @@ vr-agent/
     ELEVENLABS_VOICE_ID=21m00Tcm4TlvDq8ikWAM
 
     # User Secrets (Add these to GitHub Secrets if deploying)
+    ELEVENLABS_VOICE_ID=<your_voice_id>
     TEACHER_EMAIL_PREMIUM=<your_premium_email>
     TEACHER_PASSWORD_PREMIUM=<your_premium_password>
     TEACHER_EMAIL_BASIC=<your_basic_email>
