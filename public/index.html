@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>WebVR English Teacher</title>
+  <meta name="description" content="Practicing English in VR with AI">
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://unpkg.com/aframe-environment-component/dist/aframe-environment-component.min.js"></script>
+  <!-- Custom logic -->
+  <script src="js/app.js" defer></script>
+</head>
+
+<body>
+  <!-- Login Overlay (2D) -->
+  <div id="login-overlay"
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #222; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-family: sans-serif;">
+    <h1>VR English Class (Teacher Portal)</h1>
+    <p>Please log in to continue:</p>
+    <input type="email" id="email" placeholder="Teacher Email"
+      style="padding: 10px; font-size: 1.2em; text-align: center; margin-bottom: 10px; width: 250px;">
+    <input type="password" id="password" placeholder="Password"
+      style="padding: 10px; font-size: 1.2em; text-align: center; margin-bottom: 20px; width: 250px;">
+    <button id="login-btn"
+      style="padding: 10px 20px; font-size: 1.2em; cursor: pointer; background: #4CC3D9; border: none; color: white;">Login</button>
+    <p id="login-error" style="color: red; display: none; margin-top: 10px;">Invalid Credentials</p>
+  </div>
+
+  <!-- Dashboard Overlay (Teacher Selects Student & Lesson) -->
+  <div id="dashboard-overlay"
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #333; z-index: 9998; display: none; flex-direction: column; align-items: center; justify-content: center; color: white; font-family: sans-serif;">
+    <h1 id="welcome-msg">Welcome, Teacher</h1>
+
+    <div style="background: #444; padding: 20px; border-radius: 10px; min-width: 300px;">
+      <h3>1. Select Student</h3>
+      <select id="student-select" style="width: 100%; padding: 10px; font-size: 1.1em; margin-bottom: 20px;">
+        <option value="">-- Choose Student --</option>
+      </select>
+
+      <h3>2. Select Lesson</h3>
+      <select id="lesson-select" style="width: 100%; padding: 10px; font-size: 1.1em; margin-bottom: 20px;">
+        <option value="">-- Choose Lesson --</option>
+      </select>
+
+      <button id="start-session-btn"
+        style="width: 100%; padding: 15px; font-size: 1.2em; cursor: pointer; background: #4CC3D9; border: none; color: white; font-weight: bold; margin-bottom: 10px;">
+        Start VR Session
+      </button>
+
+      <button id="view-feedback-btn"
+        style="width: 100%; padding: 10px; font-size: 1em; cursor: pointer; background: #666; border: none; color: white;">
+        View Past Feedback
+      </button>
+    </div>
+  </div>
+
+  <!-- History Overlay (List of Past Sessions) -->
+  <div id="history-overlay"
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #333; z-index: 9998; display: none; flex-direction: column; align-items: center; justify-content: center; color: white; font-family: sans-serif;">
+    <h1>Performance History</h1>
+    <div id="history-list"
+      style="width: 80%; max-width: 600px; max-height: 70vh; overflow-y: auto; background: #444; padding: 20px; border-radius: 8px;">
+      <!-- History items injected here -->
+      <p style="text-align: center; color: #aaa;">No history found.</p>
+    </div>
+    <button id="close-history-btn" style="margin-top: 20px; padding: 10px 20px; font-size: 1.2em; cursor: pointer;">Back
+      to Dashboard</button>
+  </div>
+
+  <!-- Session Feedback Overlay (2D - shows after exit VR or session end) -->
+  <div id="feedback-overlay"
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; color: white; font-family: sans-serif;">
+    <h1>Session Complete</h1>
+    <div id="ai-feedback"
+      style="max-width: 600px; text-align: left; background: #333; padding: 20px; border-radius: 8px;">
+      Loading Feedback...
+    </div>
+    <button onclick="location.reload()"
+      style="margin-top: 20px; padding: 10px 20px; font-size: 1.2em; cursor: pointer;">Start New Session</button>
+  </div>
+
+  <a-scene>
+    <a-assets>
+      <!-- <img id="sky" src=""> Removed dynamic asset binding -->
+    </a-assets>
+
+    <!-- Environment / Sky -->
+    <a-sky id="skybox" color="#FFF"></a-sky>
+
+    <!-- Lighting -->
+    <a-entity light="type: ambient; color: #BBB"></a-entity>
+    <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="-0.5 1 1"></a-entity>
+
+    <!-- Teacher Entity (Visual Placeholder for Mouth Animation) -->
+    <a-sphere id="teacher" position="0 1.6 -2.5" radius="0.2" color="#FFC65D"></a-sphere>
+
+    <!-- High Quality Text Bubble (Floating above where the officer will be in the photo) -->
+    <!-- Raised Y to 2.2 to be above officer's head -->
+    <a-text id="teacher-text" value="Welcome!" align="center" color="#FFF" position="0 2.2 -2.5" scale="3 3 3"
+      geometry="primitive: plane; width: 4; height: 1" material="color: #000; opacity: 0.8"
+      text="width: 3.8; wrapCount: 30; xOffset: 0; zOffset: 0.01;" billboard></a-text>
+
+    <!-- Environment Labels (Dynamic) -->
+    <a-entity id="environment-labels"></a-entity>
+
+    <!-- End Session Button (VR) - Central Dashboard Style -->
+    <a-box id="end-session-btn" position="0 0.8 -1.2" depth="0.05" height="0.3" width="0.8" color="#FF4444"
+      class="clickable" visible="false"
+      animation__mouseenter="property: scale; to: 1.1 1.1 1.1; dur: 200; startEvents: mouseenter"
+      animation__mouseleave="property: scale; to: 1 1 1; dur: 200; startEvents: mouseleave">
+      <a-text value="End Session" align="center" position="0 0 0.06" scale="0.8 0.8 0.8"></a-text>
+    </a-box>
+
+    <!-- Controls Instruction -->
+    <a-text value="Hold SPACE to Speak" position="0 0.5 -1.5" align="center" color="#AAA" scale="1.5 1.5 1.5"></a-text>
+
+    <!-- User Controller / Camera -->
+    <a-entity id="rig" position="0 0 0">
+      <!-- Increased FOV to 100 to feel less "zoomed in" -->
+      <a-camera position="0 1.6 0" fov="100">
+        <a-cursor color="yellow" fuse="true" fuse-timeout="500" raycaster="objects: .clickable"></a-cursor>
+      </a-camera>
+
+      <!-- Controllers with event listeners -->
+      <a-entity id="leftHand" laser-controls="hand: left" raycaster="objects: .clickable; far: 5"></a-entity>
+      <a-entity id="rightHand" laser-controls="hand: right" raycaster="objects: .clickable; far: 5"></a-entity>
+    </a-entity>
+
+    <!-- Indicator for recording status -->
+    <a-entity id="recording-indicator" geometry="primitive: sphere; radius: 0.1" material="color: red; visible: false"
+      position="0 0.5 -1"
+      animation="property: scale; from: 1 1 1; to: 1.2 1.2 1.2; dir: alternate; loop: true; dur: 500"></a-entity>
+
+  </a-scene>
+</body>
+
+</html>
