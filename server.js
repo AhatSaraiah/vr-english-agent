@@ -125,7 +125,7 @@ app.post('/api/login', (req, res) => {
     const lessons = MOCK_DB.lessons;
 
     res.json({
-        user: { id: user.id, name: user.name, plan: user.plan },
+        user: { id: user.id, name: user.name, plan: user.plan, email: user.email },
         students: myStudents,
         lessons: lessons
     });
@@ -234,6 +234,10 @@ app.get('/api/student/:studentId/history', (req, res) => {
     res.json(enrichedHistory);
 });
 
-app.listen(port, () => {
-    console.log(`VR English Teacher Server running at http://localhost:${port}`);
-});
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`VR English Teacher Server running at http://localhost:${port}`);
+    });
+}
+
+module.exports = app;
