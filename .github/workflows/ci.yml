@@ -36,13 +36,13 @@ jobs:
         PORT: 3000
         # Secrets are not strictly needed here because we mock external calls in tests
         # But we provide placeholders to satisfy any config checks
-        GEMINI_API_KEY: "mock_key"
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         GEMINI_MODEL: "gemini-2.5-flash"
-        ELEVENLABS_API_KEY: "mock_key"
-        ELEVENLABS_VOICE_ID: "mock_voice"
-        TEACHER_EMAIL_PREMIUM: "teacher@school.com"
-        TEACHER_PASSWORD_PREMIUM: "password123"
-        TEACHER_EMAIL_BASIC: "basic@school.com"
-        TEACHER_PASSWORD_BASIC: "password123"
-        TEACHER_EMAIL_INACTIVE: "inactive@school.com"
-        TEACHER_PASSWORD_INACTIVE: "password123"
+        ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        ELEVENLABS_VOICE_ID: "21m00Tcm4TlvDq8ikWAM"
+        TEACHER_EMAIL_PREMIUM: ${{ secrets.TEACHER_EMAIL_PREMIUM }}
+        TEACHER_PASSWORD_PREMIUM: ${{ secrets.TEACHER_PASSWORD_PREMIUM }}
+        TEACHER_EMAIL_BASIC: ${{ secrets.TEACHER_EMAIL_BASIC }}
+        TEACHER_PASSWORD_BASIC: ${{ secrets.TEACHER_PASSWORD_BASIC }}
+        TEACHER_EMAIL_INACTIVE: ${{ secrets.TEACHER_EMAIL_INACTIVE }}
+        TEACHER_PASSWORD_INACTIVE: ${{ secrets.TEACHER_PASSWORD_INACTIVE }}
