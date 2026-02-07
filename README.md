@@ -96,6 +96,17 @@ vr-agent/
 3.  **Analytics Dashboard**: Visual charts showing student progress (vocabulary growth, error rates).
 4.  **Multi-User Deployment**: Deploy to cloud (Vercel/Render) for global access.
 
-## 📄 License
+## � Deployment (Vercel)
+
+This project is configured for easy deployment on **Vercel**.
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FAhatSaraiah%2Fvr-english-agent&env=GEMINI_API_KEY,ELEVENLABS_API_KEY,ELEVENLABS_VOICE_ID,TEACHER_EMAIL_PREMIUM,TEACHER_PASSWORD_PREMIUM)
+
+1.  **Click the button above** (or manually import your repo in Vercel).
+2.  **Environment Variables**: Vercel will ask for the variables listed in `.env.example`.
+3.  **Add Secrets**: Copy your API keys and the Teacher credentials you created.
+4.  **Deploy**: Click "Deploy" and your VR Agent will be live!
+
+## �📄 License
 
 This project is proprietary and confidential. Unauthorized copying of this file, via any medium is strictly prohibited.
