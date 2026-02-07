@@ -84,8 +84,7 @@ vr-agent/
 
 2.  **Open the App**:
     - Go to [http://localhost:3000](http://localhost:3000).
-    - **Premium Login**: `teacher@school.com` / `password123` (Full Access)
-    - **Basic Login**: `basic@school.com` / `password123` (Limited Access)
+    - login with your teacher email and password
 
 3.  **Run Session**: Select a student and lesson, then click "Start VR Session".
 
