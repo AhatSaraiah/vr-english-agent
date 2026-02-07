@@ -24,9 +24,28 @@ app.get('/favicon.ico', (req, res) => res.status(204).end());
 const MOCK_DB = {
     // Teachers (Paying Customers/Clients)
     users: [
-        { id: 't1', email: 'teacher@school.com', password: 'password123', name: 'Sara Teacher', plan: 'Premium' },
-        { id: 't2', email: 'inactive@school.com', password: 'password123', name: 'Inactive Teacher', plan: 'Basic', status: 'inactive' },
-        { id: 't3', email: 'basic@school.com', password: 'password123', name: 'Bob Basic', plan: 'Basic' }
+        {
+            id: 't1',
+            email: process.env.TEACHER_EMAIL_PREMIUM,
+            password: process.env.TEACHER_PASSWORD_PREMIUM,
+            name: 'Sara Teacher',
+            plan: 'Premium'
+        },
+        {
+            id: 't2',
+            email: process.env.TEACHER_EMAIL_INACTIVE,
+            password: process.env.TEACHER_PASSWORD_INACTIVE,
+            name: 'Inactive Teacher',
+            plan: 'Basic',
+            status: 'inactive'
+        },
+        {
+            id: 't3',
+            email: process.env.TEACHER_EMAIL_BASIC,
+            password: process.env.TEACHER_PASSWORD_BASIC,
+            name: 'Bob Basic',
+            plan: 'Basic'
+        }
     ],
     // Students (Profiles under a Teacher)
     students: [

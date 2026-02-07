@@ -65,6 +65,14 @@ vr-agent/
     GEMINI_MODEL=gemini-2.5-flash
     ELEVENLABS_API_KEY=xi...
     ELEVENLABS_VOICE_ID=21m00Tcm4TlvDq8ikWAM
+
+    # User Secrets (Add these to GitHub Secrets if deploying)
+    TEACHER_EMAIL_PREMIUM=<your_premium_email>
+    TEACHER_PASSWORD_PREMIUM=<your_premium_password>
+    TEACHER_EMAIL_BASIC=<your_basic_email>
+    TEACHER_PASSWORD_BASIC=<your_basic_password>
+    TEACHER_EMAIL_INACTIVE=<your_inactive_email>
+    TEACHER_PASSWORD_INACTIVE=<your_inactive_password>
     ```
 
 ## ▶️ Usage
