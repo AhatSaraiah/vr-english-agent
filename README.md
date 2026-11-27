@@ -1,112 +1,94 @@
-# VR English Teacher (AI-Powered)
+# VR English Teacher
 
-Experience an immersive English learning session in Virtual Reality with an AI teacher that listens, speaks, and remembers your conversation. Designed for teachers to manage student sessions, with premium features for detailed feedback tracking.
+An English lesson that happens inside a VR scene. The learner puts on a headset, lands in an airport
+terminal, restaurant or hotel lobby, speaks out loud, and an AI teacher answers with a voice, remembers
+the conversation and writes up feedback afterwards.
 
-## 🚀 Features
+Built as a full-stack AI project: A-Frame frontend, Express API, Google Gemini for the teacher's brain,
+ElevenLabs for the voice.
 
-### 1. Teacher-Centric Workflow
-- **Secure Login**: Authentication for Teachers (Email/Password).
-- **Student Profiles**: Teachers manage multiple student profiles under one account.
-- **Dashboard**: Select a specific Student and Lesson before starting the VR session to track individual progress.
+## Scenes
 
-### 2. Immersive VR Environments
-- **Dynamic 360° Scenes**: High-resolution backgrounds for "Airport Terminal", "Restaurant", and "Hotel Lobby".
-- **Contextual Labels**: Floats helpful vocabulary (e.g., "Reception Desk", "Menu") in 3D space relevant to the current lesson.
-- **Interactive UI**: Gaze-based interaction and controller support for VR headsets.
+| Airport terminal | Restaurant | Hotel lobby |
+| --- | --- | --- |
+| ![Airport](public/img/airport.jpg) | ![Restaurant](public/img/restaurant.png) | ![Hotel](public/img/hotel.png) |
 
-### 3. Multimodal AI Teacher
-- **Brain**: Powered by **Google Gemini 2.5 Flash** (Pay-As-You-Go) for instant, context-aware responses.
-- **Voice**: Powered by **ElevenLabs Turbo v2** (Paid Tier) for hyper-realistic speech.
-- **Memory**: Remembers conversation history (up to 100 turns) to maintain context (e.g., remembering names, travel details).
-
-### 4. Premium Feedback History
-- **Automatic Analysis**: After every session, the AI generates constructive feedback on grammar and vocabulary.
-- **History View**: Premium teachers see a beautiful, scrollable timeline of past feedback for each student.
-- **Access Control**: Basic plan users are restricted from viewing detailed history.
-
-### 5. Robust Engineering (Refactored)
-- **Modular Codebase**: Core logic is separated into `tools/gemini.js` (AI) and `tools/tts.js` (Speech) for maintainability.
-- **Fallback Systems**:
-  - **No Paid Subscription?**: Automatically falls back to **Google TTS (Free)** if ElevenLabs fails.
-  - **Rate Limits?**: Handles Gemini rate limits gracefully with natural conversational fillers ("I see, go on...").
-
-## 🛠️ Project Structure
+## How it works
 
 ```
-vr-agent/
-├── public/              # Frontend assets (HTML, CSS, JS, Images)
-│   ├── js/app.js        # Main frontend logic (VR, Audio, UI)
-│   └── index.html       # VR Scene and Overlay UI
-├── tools/               # Backend modules for AI capabilities
-│   ├── gemini.js        # Google Gemini integration (Chat & Feedback)
-│   └── tts.js           # Text-to-Speech logic (ElevenLabs + Google)
-├── server.js            # Express server (Routes, API, MOCK_DB)
-└── .env                 # API Keys and Configuration
+Browser (A-Frame 360° scene + gaze interaction)
+   │  MediaRecorder captures the learner's speech
+   ▼
+Express  POST /api/chat
+   ├── tools/gemini.js   audio + last 100 turns → Gemini 2.5 Flash → { transcript, replyText }
+   └── tools/tts.js      replyText → ElevenLabs Turbo v2 → audio (Google TTS fallback)
+   ▼
+Browser plays the reply, appends the turn to the session history
 ```
 
-## 📦 Installation
+**Design notes**
 
-1.  **Clone the repository**:
-    ```bash
-    git clone <repository-url>
-    cd vr-agent
-    ```
+- **One model call per turn.** The recorded audio and the conversation history go to Gemini together, so
+  transcription and the teacher's reply come back in a single JSON response instead of a
+  speech-to-text then text-to-text pipeline.
+- **The voice degrades instead of failing.** ElevenLabs is tried first; on a quota or network error the
+  reply is spoken with Google TTS, and rate-limited model calls are answered with a short conversational
+  filler so a lesson never dies mid-sentence.
+- **Memory is bounded on purpose.** The last 100 turns are sent with each request, which keeps the
+  teacher coherent (it remembers names and travel details) without unbounded prompt growth.
+- **Feedback is generated after the session**, from the transcript, as grammar and vocabulary notes.
 
-2.  **Install dependencies**:
-    ```bash
-    npm install
-    ```
+## Features
 
-3.  **Configure Environment**:
-    Create a `.env` file in the root directory:
-    ```ini
-    PORT=3000
-    GEMINI_API_KEY=AIzaSy...
-    GEMINI_MODEL=gemini-2.5-flash
-    ELEVENLABS_API_KEY=xi...
-    ELEVENLABS_VOICE_ID=21m00Tcm4TlvDq8ikWAM
+- Teacher accounts with student profiles, and a lesson picker before a session starts
+- Plan-based access: premium teachers see the full feedback history, basic teachers do not
+- 360° scenes with vocabulary labels placed in the scene and gaze-based interaction for headsets
+- Session feedback generated by the model at the end of each lesson
+- API test suite (Jest + Supertest) that mocks the model and speech providers, running in GitHub Actions
+  on Node 18 and 20
 
-    # User Secrets (Add these to GitHub Secrets if deploying)
-    ELEVENLABS_VOICE_ID=<your_voice_id>
-    TEACHER_EMAIL_PREMIUM=<your_premium_email>
-    TEACHER_PASSWORD_PREMIUM=<your_premium_password>
-    TEACHER_EMAIL_BASIC=<your_basic_email>
-    TEACHER_PASSWORD_BASIC=<your_basic_password>
-    TEACHER_EMAIL_INACTIVE=<your_inactive_email>
-    TEACHER_PASSWORD_INACTIVE=<your_inactive_password>
-    ```
+## Getting started
 
-## ▶️ Usage
+```bash
+npm install
+cp .env.example .env        # add GEMINI_API_KEY, ELEVENLABS_API_KEY, ELEVENLABS_VOICE_ID
+npm start                   # http://localhost:3000
+```
 
-1.  **Start the Server**:
-    ```bash
-    npm start
-    ```
+Sign in with the teacher credentials from `.env` (the demo accounts are seeded from those variables),
+pick a student and a lesson, then start the session.
 
-2.  **Open the App**:
-    - Go to [http://localhost:3000](http://localhost:3000).
-    - login with your teacher email and password
+### Tests
 
-3.  **Run Session**: Select a student and lesson, then click "Start VR Session".
+```bash
+npm test
+```
 
-## 🔮 Roadmap
+The suite sets its own credentials and mocks `tools/gemini` and `tools/tts`, so it runs without API keys
+or a `.env` file.
 
-1.  **Database Integration**: Migrate `MOCK_DB` to Supabase/PostgreSQL for persistent data.
-2.  **Content Management System**: UI for teachers to create custom lessons and upload 360° images.
-3.  **Analytics Dashboard**: Visual charts showing student progress (vocabulary growth, error rates).
-4.  **Multi-User Deployment**: Deploy to cloud (Vercel/Render) for global access.
+## Project layout
 
-## � Deployment (Vercel)
+```
+public/            index.html, js/app.js (VR scene, recording, UI), 360° images
+server.js          Express routes, session state, seeded teacher/student/lesson data
+tools/gemini.js    Gemini chat and feedback
+tools/tts.js       ElevenLabs speech with Google TTS fallback
+db/schema.sql      PostgreSQL schema for the persistent version
+tests/             Jest + Supertest API tests
+```
 
-This project is configured for easy deployment on **Vercel**.
+## Deployment
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FAhatSaraiah%2Fvr-english-agent&env=GEMINI_API_KEY,ELEVENLABS_API_KEY,ELEVENLABS_VOICE_ID,TEACHER_EMAIL_PREMIUM,TEACHER_PASSWORD_PREMIUM)
+The repo ships a `vercel.json` for Vercel. Set `GEMINI_API_KEY`, `ELEVENLABS_API_KEY`,
+`ELEVENLABS_VOICE_ID` and the teacher account variables in the project environment, then deploy.
 
-1.  **Click the button above** (or manually import your repo in Vercel).
-2.  **Environment Variables**: Vercel will ask for the variables listed in `.env.example`.
-3.  **Add Secrets**: Copy your API keys and the Teacher credentials you created.
-4.  **Deploy**: Click "Deploy" and your VR Agent will be live!
+## Status and next steps
 
-## �📄 License
+Sessions and accounts currently live in an in-memory store, so a restart resets them. `db/schema.sql`
+holds the PostgreSQL model (teachers, students, lessons, sessions) that the next step wires in, along
+with per-teacher content management for lessons and 360° images.
 
-This project is proprietary and confidential. Unauthorized copying of this file, via any medium is strictly prohibited.
+## License
+
+Proprietary and confidential. All rights reserved.
